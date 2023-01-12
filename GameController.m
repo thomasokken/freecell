@@ -309,7 +309,10 @@
             currentDuration, NSLocalizedString(@"bestIs", "best is"), shortestDuration]];
 }
 
-- (void) moveMade
+- (void) moveMade {
+    [self performSelectorOnMainThread:@selector(moveMade2) withObject:nil waitUntilDone:NO];
+}
+- (void) moveMade2
 {
     NSUInteger currentMoves = [game moves];
     NSUInteger shortestMoves = [history shortestMoves];
@@ -355,7 +358,11 @@
     game = [newGame retain];
 }
 
-- (void) gameOver
+- (void) gameOver {
+    [self performSelectorOnMainThread:@selector(gameOver2) withObject:nil waitUntilDone:YES];
+}
+
+- (void) gameOver2
 {
     NSString *title, *defaultButton, *alternateButton, *message;
     SEL selector;

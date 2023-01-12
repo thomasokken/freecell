@@ -81,7 +81,8 @@
         [self setStartDate: [NSDate date]];
         inProgress = NO;
 
-        [view setNeedsDisplay: YES];
+        //[view setNeedsDisplay: YES];
+        [view setNeedsDisplaySafely];
     }
     return self;
 }
@@ -208,7 +209,12 @@
     }
 
     [self G_setMove: nil];
-    [view display];
+    //[view display];
+    [view performSelectorOnMainThread:@selector(display) withObject:nil waitUntilDone:YES];
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 5000000;
+    nanosleep(&ts, NULL);
     [self G_moreMoves];
     if ([defaults boolForKey: @"gameAutoStack"] == YES)
         [self G_autoStack];
@@ -363,7 +369,8 @@ makeMove:
         [table move: undo];
 
         [controller moveMade];
-        [view setNeedsDisplay: YES];
+        //[view setNeedsDisplay: YES];
+        [view setNeedsDisplaySafely];
     }
 }
 
@@ -378,7 +385,8 @@ makeMove:
         [table move: redo];
         
         [controller moveMade];
-        [view setNeedsDisplay: YES];
+        //[view setNeedsDisplay: YES];
+        [view setNeedsDisplaySafely];
     }
 }
     
@@ -392,7 +400,8 @@ makeMove:
             && [table firstCardAtLocation: location] != nil)
         {
             [self G_setMove: [TableMove moveFromSource: location]];
-            [view setNeedsDisplay: YES];
+            //[view setNeedsDisplay: YES];
+            [view setNeedsDisplaySafely];
         }
         return;
     }

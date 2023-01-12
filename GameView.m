@@ -187,10 +187,20 @@
         // quad-click to be understood as two double-clicks in quick succession,
         // which makes perfect UI sense in this case.
         if (([event clickCount] % 2) == 0)
-            [game doubleClickedTableLocation: location];
+            [game performSelectorInBackground:@selector(doubleClickedTableLocation:) withObject:location];
+            //[game doubleClickedTableLocation: location];
         else
-            [game clickedTableLocation: location];
+            [game performSelectorInBackground:@selector(clickedTableLocation:) withObject:location];
+            //[game clickedTableLocation: location];
     }
+}
+
+- (void) setNeedsDisplaySafely {
+    [self performSelectorOnMainThread:@selector(setNeedsDisplaySafely2) withObject:nil waitUntilDone:NO];
+}
+
+- (void) setNeedsDisplaySafely2 {
+    [self setNeedsDisplay:YES];
 }
 
 // Mutators
@@ -201,7 +211,8 @@
     [game release];
     game = [newGame retain];
     table = [game table];
-    [self setNeedsDisplay: YES];
+    //[self setNeedsDisplay: YES];
+    [self setNeedsDisplaySafely];
 }
 
 - (void) setController: (GameController *) newController;
@@ -231,7 +242,8 @@
                             edgeMargin + (cardHeight + margin) * 2 + smallOverlap * 18 + edgeMargin);
 
     [controller setWindowSize: NSMakeSize(size.width, size.height + 22)];
-    [self setNeedsDisplay: YES];
+    //[self setNeedsDisplay: YES];
+    [self setNeedsDisplaySafely];
 }
 
 - (void) setBackgroundColour: (NSColor *) colour
@@ -239,7 +251,8 @@
     [colour retain];
     [backgroundColour release];
     backgroundColour = colour;
-    [self setNeedsDisplay: YES];
+    //[self setNeedsDisplay: YES];
+    [self setNeedsDisplaySafely];
 }
 
 @end
