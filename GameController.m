@@ -166,10 +166,13 @@
     if ([game hint])
     {
         [view display];
-        sleep(1);
-        [game setHint: nil];
-        [view display];
+        [self performSelector:@selector(hintDone) withObject:nil afterDelay:1];
     }
+}
+
+- (void) hintDone {
+    [game setHint: nil];
+    [view display];
 }
 
 - (IBAction) undo: (id) sender
