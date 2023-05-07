@@ -3,7 +3,7 @@
 [Freecell for MacOS—download here](https://github.com/thomasokken/freecell/releases).  
 For MacOS 10.13 (High Sierra) or later.
 
-![Screenshot of Freecell](http://i.imgur.com/C0eGcRj.png)
+![Screenshot of Freecell](screenshot.png)
 
 ## What's Freecell?
 
