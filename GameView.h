@@ -57,4 +57,9 @@
 - (void) setCardView: (CardView *) newCardView;
 - (void) setBackgroundColour: (NSColor *) colour;
 
+// Thread-safe repainting
+//
+
+- (void) setNeedsDisplaySafely;
+
 @end
