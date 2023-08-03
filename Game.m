@@ -28,6 +28,7 @@
 //  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdlib.h>
+#include <pthread.h>
 #include "vccRand.h"
 #import "Game.h"
 #import "Card.h"
@@ -66,6 +67,8 @@
     {
         view = newView;
         controller = newController;
+        pthread_mutex_init(&moveMutex, NULL);
+        moveInProgress = NO;
 
         defaults = [NSUserDefaults standardUserDefaults];
         
@@ -98,6 +101,7 @@
     [hint release];
     [self setStartDate: nil];
     [self setEndDate: nil];
+    pthread_mutex_destroy(&moveMutex);
     [super dealloc];
 }
 
@@ -392,6 +396,15 @@ makeMove:
     
 - (void) clickedTableLocation: (TableLocation *) location
 {
+    pthread_mutex_lock(&moveMutex);
+    if (moveInProgress) {
+        pthread_mutex_unlock(&moveMutex);
+        return;
+    } else {
+        moveInProgress = YES;
+        pthread_mutex_unlock(&moveMutex);
+    }
+
     // If a move hasn't been started yet, and the location clicked can be
     // moved from (it's a free cell or a column), start the move.
     if (move == nil)
@@ -403,17 +416,31 @@ makeMove:
             //[view setNeedsDisplay: YES];
             [view setNeedsDisplaySafely];
         }
-        return;
+        goto end;
     }
 
     // Otherwise, a move has been started, and this is the desired destination.
     [move setDestination: location];
 
     [self G_attemptMove];
+
+    end:
+    pthread_mutex_lock(&moveMutex);
+    moveInProgress = NO;
+    pthread_mutex_unlock(&moveMutex);
 }
 
 - (void) doubleClickedTableLocation: (TableLocation *) source
 {
+    pthread_mutex_lock(&moveMutex);
+    if (moveInProgress) {
+        pthread_mutex_unlock(&moveMutex);
+        return;
+    } else {
+        moveInProgress = YES;
+        pthread_mutex_unlock(&moveMutex);
+    }
+
     unsigned i;
 
     [self G_setMove: [TableMove moveFromSource: source]];
@@ -431,6 +458,10 @@ makeMove:
     }
 
     [self G_attemptMove];
+
+    pthread_mutex_lock(&moveMutex);
+    moveInProgress = NO;
+    pthread_mutex_unlock(&moveMutex);
 }
 
 - (void) setHint

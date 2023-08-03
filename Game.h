@@ -50,6 +50,8 @@
     NSDate		*startDate;
     NSDate		*endDate;
     BOOL		inProgress;
+    pthread_mutex_t	moveMutex;
+    BOOL		moveInProgress;
     Result		*result;
 }
 
